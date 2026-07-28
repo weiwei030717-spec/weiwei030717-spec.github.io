@@ -5,7 +5,7 @@
   <title>Minecraft Web Toolkit</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
-  <script src="https://unpkg.com/nbt@0.10.1/nbt.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nbt@0.10.1/nbt.js"></script>
   
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #2b2b2b; color: white; }
@@ -17,42 +17,14 @@
     .panel { display: none; }
     .panel.active { display: block; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
     .upload-box { border: 2px dashed #666; border-radius: 8px; padding: 60px; text-align: center; background: #333; transition: 0.2s; }
     .upload-box:hover { border-color: #4CAF50; }
-
-    /* 【新增】編輯表單區塊樣式 */
-    #editForm {
-      display: none;
-      margin-top: 20px;
-      padding: 25px;
-      background: #1e1e1e;
-      border-radius: 8px;
-      border-left: 4px solid #4CAF50;
-    }
+    #editForm { display: none; margin-top: 20px; padding: 25px; background: #1e1e1e; border-radius: 8px; border-left: 4px solid #4CAF50; }
     .form-group { margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
     .form-group label { font-size: 16px; min-width: 100px; }
-    .form-control {
-      padding: 8px 12px;
-      font-size: 16px;
-      background: #333;
-      color: white;
-      border: 1px solid #555;
-      border-radius: 4px;
-    }
-    .export-btn {
-      padding: 12px 24px;
-      font-size: 18px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.2s;
-    }
+    .form-control { padding: 8px 12px; font-size: 16px; background: #333; color: white; border: 1px solid #555; border-radius: 4px; }
+    .export-btn { padding: 12px 24px; font-size: 18px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
     .export-btn:hover { background: #45a049; }
-
     .music-player { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px 30px; display: flex; align-items: center; border-top: 3px solid #4CAF50; box-sizing: border-box; z-index: 1000; }
   </style>
 </head>
@@ -64,21 +36,17 @@
   </div>
 
   <div class="content-area">
-    
     <div id="editor" class="panel active">
       <h2>Level.dat 檔案編輯</h2>
       
-      <!-- 上傳區 -->
       <div class="upload-box" id="uploadArea">
         <h3 style="margin-top: 0;">點擊或拖曳選擇 level.dat 檔案</h3>
         <input type="file" id="fileInput" accept=".dat" />
         <p id="statusMsg" style="color: #aaa; margin-top: 15px;">等待讀取檔案...</p>
       </div>
 
-      <!-- 【新增】圖形化編輯表單 (預設隱藏) -->
       <div id="editForm">
         <h3 style="margin-top: 0; margin-bottom: 20px;">世界設定控制面板</h3>
-        
         <div class="form-group">
           <label for="gameType">遊戲模式：</label>
           <select id="gameType" class="form-control">
@@ -88,38 +56,39 @@
             <option value="3">旁觀者模式 (Spectator)</option>
           </select>
         </div>
-
         <div class="form-group">
           <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
             <input type="checkbox" id="allowCommands" style="width: 20px; height: 20px;">
             <span>允許作弊 (Allow Cheats)</span>
           </label>
         </div>
-        
         <div class="form-group">
           <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
             <input type="checkbox" id="hardcore" style="width: 20px; height: 20px;">
             <span style="color: #ff6b6b; font-weight: bold;">極限模式 (Hardcore)</span>
           </label>
         </div>
-
         <div style="margin-top: 30px;">
           <button class="export-btn" onclick="exportDatFile()">💾 儲存並匯出修改後的 level.dat</button>
         </div>
       </div>
-      
     </div>
 
-    <!-- 地圖區保持不變 -->
     <div id="maps" class="panel">
       <h2>特別地圖展示庫</h2>
-      <!-- ...省略地圖內容... -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+        <div style="background: #3c3c3c; padding: 20px; border-radius: 8px;">
+          <h3>跑酷地圖：天空之城</h3>
+          <p>這裡可以放截圖與介紹</p>
+          <button style="padding: 8px 15px;">下載地圖</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="music-player">
     <div style="margin-right: 20px; font-weight: bold;">🎵 唱片機</div>
-    <audio controls><source src="test.mp3" type="audio/mpeg"></audio>
+    <audio controls><source src="music.mp3" type="audio/mpeg"></audio>
   </div>
 
   <script>
@@ -130,125 +99,93 @@
       btnElement.classList.add('active');
     }
 
-    // --- 核心邏輯 ---
-    let currentNbtData = null; // 用來暫存解析後的 NBT 結構
-
+    let currentNbtData = null;
     const fileInput = document.getElementById('fileInput');
     const statusMsg = document.getElementById('statusMsg');
     const editForm = document.getElementById('editForm');
     const uploadArea = document.getElementById('uploadArea');
 
-    // 1. 讀取並解析檔案
     fileInput.addEventListener('change', function(event) {
       const file = event.target.files[0];
       if (!file) return;
 
       statusMsg.style.color = "white";
       statusMsg.innerText = "正在解壓縮與解析中...";
+      uploadArea.style.padding = "60px";
+      editForm.style.display = "none";
 
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
           const uint8Array = new Uint8Array(e.target.result);
-          const decompressedData = pako.inflate(uint8Array);
+          let decompressedData;
+          
+          try {
+            decompressedData = pako.inflate(uint8Array);
+          } catch (pakoErr) {
+            throw new Error("解壓縮失敗 (這可能不是 Java 版的 level.dat 或未經壓縮)。");
+          }
+
           const buffer = decompressedData.buffer.slice(decompressedData.byteOffset, decompressedData.byteOffset + decompressedData.byteLength);
 
-          // NBT 解析
+          // 確認 nbt 是否成功載入
+          if (typeof nbt === 'undefined') {
+            throw new Error("nbt 解析工具未載入，請確認有連接網路或嘗試重新整理頁面。");
+          }
+
           nbt.parseUncompressed(buffer, function(error, data) {
-            if (error) throw error;
+            if (error) {
+              statusMsg.innerText = "❌ NBT 解析失敗：" + error.message;
+              statusMsg.style.color = "#ff6b6b";
+              console.error(error);
+              return;
+            }
             
-            // 儲存到全域變數，供稍後匯出使用
             currentNbtData = data;
-            
-            // 【資料綁定】讀取 NBT 中的資料，並套用到網頁的按鈕上
-            // Minecraft level.dat 的實際資料通常包在 data.value.Data.value 裡面
             const levelData = data.value.Data.value;
             
-            // 設定遊戲模式 (value 對應選單的 0,1,2,3)
-            if(levelData.GameType) {
-              document.getElementById('gameType').value = levelData.GameType.value;
-            }
-            
-            // 設定允許作弊 (1 為 true，0 為 false)
-            if(levelData.allowCommands) {
-              document.getElementById('allowCommands').checked = (levelData.allowCommands.value === 1);
-            }
+            if(levelData.GameType) document.getElementById('gameType').value = levelData.GameType.value;
+            if(levelData.allowCommands) document.getElementById('allowCommands').checked = (levelData.allowCommands.value === 1);
+            if(levelData.hardcore) document.getElementById('hardcore').checked = (levelData.hardcore.value === 1);
 
-            // 設定極限模式
-            if(levelData.hardcore) {
-              document.getElementById('hardcore').checked = (levelData.hardcore.value === 1);
-            }
-
-            // 切換畫面顯示：縮小上傳區，顯示編輯表單
             statusMsg.innerText = "✅ 解析成功！請在下方進行修改。";
             statusMsg.style.color = "#4CAF50";
             uploadArea.style.padding = "20px";
             editForm.style.display = "block";
           });
+
         } catch (err) {
-          statusMsg.innerText = "❌ 解析失敗，這可能不是正確的 level.dat 檔案。";
+          statusMsg.innerText = "❌ " + err.message;
           statusMsg.style.color = "#ff6b6b";
-          console.error(err);
+          console.error("系統錯誤:", err);
         }
       };
       reader.readAsArrayBuffer(file);
     });
 
-    // 2. 打包與匯出檔案
     function exportDatFile() {
-      if (!currentNbtData) {
-        alert("請先上傳檔案！");
-        return;
-      }
-
-      // 【反向綁定】將網頁表單上的設定，寫回到 JSON 結構中
+      if (!currentNbtData) { alert("請先上傳檔案！"); return; }
+      
       const levelData = currentNbtData.value.Data.value;
-      
-      // 更新遊戲模式 (轉回整數)
-      if(levelData.GameType) {
-        levelData.GameType.value = parseInt(document.getElementById('gameType').value, 10);
-      }
-      
-      // 更新允許作弊 (打勾給 1，沒打勾給 0)
-      if(levelData.allowCommands) {
-        levelData.allowCommands.value = document.getElementById('allowCommands').checked ? 1 : 0;
-      }
-
-      // 更新極限模式
-      if(levelData.hardcore) {
-        levelData.hardcore.value = document.getElementById('hardcore').checked ? 1 : 0;
-      }
+      if(levelData.GameType) levelData.GameType.value = parseInt(document.getElementById('gameType').value, 10);
+      if(levelData.allowCommands) levelData.allowCommands.value = document.getElementById('allowCommands').checked ? 1 : 0;
+      if(levelData.hardcore) levelData.hardcore.value = document.getElementById('hardcore').checked ? 1 : 0;
 
       try {
-        // 步驟 1: 將 JSON 重新轉回未壓縮的二進位 NBT 格式
         const uncompressedBuffer = nbt.writeUncompressed(currentNbtData);
-        
-        // 步驟 2: 透過 pako 將二進位資料重新 GZIP 壓縮
         const compressedData = pako.gzip(uncompressedBuffer);
-        
-        // 步驟 3: 建立虛擬檔案連結 (Blob) 並觸發下載
         const blob = new Blob([compressedData], { type: "application/gzip" });
         const url = URL.createObjectURL(blob);
-        
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
-        // 固定下載檔名為 level.dat
         downloadLink.download = "level.dat"; 
-        
-        // 模擬點擊下載
         document.body.appendChild(downloadLink);
         downloadLink.click();
         
-        // 清理記憶體
-        setTimeout(() => {
-          document.body.removeChild(downloadLink);
-          URL.revokeObjectURL(url);
-        }, 100);
-
-        alert("✅ 修改成功！已經為您匯出新的 level.dat。");
-
+        setTimeout(() => { document.body.removeChild(downloadLink); URL.revokeObjectURL(url); }, 100);
+        alert("✅ 修改成功！已經匯出新的 level.dat。");
       } catch (err) {
-        alert("匯出過程中發生錯誤，請查看 Console。");
+        alert("匯出錯誤，請查看 Console。");
         console.error(err);
       }
     }
