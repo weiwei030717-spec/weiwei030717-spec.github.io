@@ -3,111 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <title>Minecraft Web Toolkit</title>
-  
   <style>
-    /* 全域基礎樣式 */
-    body { 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-      margin: 0; 
-      background-color: #222; 
-      color: white; 
-    }
-    
-    /* 導覽列 */
-    .nav-bar { 
-      display: flex; gap: 15px; padding: 20px 30px; 
-      background: #151515; border-bottom: 2px solid #333; 
-    }
-    .tab-btn { 
-      padding: 10px 25px; font-size: 16px; cursor: pointer; 
-      background: #333; border: 2px solid transparent; 
-      color: white; border-radius: 6px; transition: 0.2s; font-weight: bold;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #222; color: white; }
+    .nav-bar { display: flex; gap: 15px; padding: 20px 30px; background: #151515; border-bottom: 2px solid #333; align-items: center; }
+    .tab-btn { padding: 10px 25px; font-size: 16px; cursor: pointer; background: #333; border: 2px solid transparent; color: white; border-radius: 6px; font-weight: bold; transition: 0.2s; }
     .tab-btn:hover { background: #444; }
     .tab-btn.active { border-color: #4CAF50; background: #1e3a1f; color: #4CAF50; }
+    
+    /* 隱藏後台按鈕 (推到最右邊) */
+    .admin-btn { margin-left: auto; background: transparent; border: none; font-size: 20px; cursor: pointer; opacity: 0.3; transition: 0.2s; }
+    .admin-btn:hover { opacity: 1; }
 
-    /* 內容切換區 */
     .content-area { padding: 40px; padding-bottom: 100px; }
     .panel { display: none; }
     .panel.active { display: block; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
     /* 模組 1: 外部連結 */
-    .external-link-box {
-      background: linear-gradient(135deg, #2c3e50, #3498db);
-      padding: 50px; border-radius: 12px; text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    }
-    .external-link-box h3 { font-size: 24px; margin-top: 0; }
-    .btn-large {
-      display: inline-block; padding: 15px 35px; font-size: 18px; font-weight: bold;
-      background: #4CAF50; color: white; text-decoration: none;
-      border-radius: 8px; transition: 0.3s; margin-top: 20px;
-    }
-    .btn-large:hover { background: #45a049; transform: scale(1.05); }
+    .external-link-box { background: linear-gradient(135deg, #2c3e50, #3498db); padding: 50px; border-radius: 12px; text-align: center; }
+    .btn-large { display: inline-block; padding: 15px 35px; font-size: 18px; font-weight: bold; background: #4CAF50; color: white; text-decoration: none; border-radius: 8px; transition: 0.3s; margin-top: 20px; }
+    .btn-large:hover { background: #45a049; }
 
     /* 模組 3: 地圖展示區 */
     .map-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-    .map-card {
-      background: #2a2a2a; border-radius: 12px; overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.3s;
-      display: flex; flex-direction: column;
-    }
-    .map-card:hover { transform: translateY(-8px); box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4); }
-    
+    .map-card { background: #2a2a2a; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
     .map-img { width: 100%; height: 180px; object-fit: cover; border-bottom: 3px solid #4CAF50; }
     .map-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-    
     .map-tags { margin-bottom: 10px; }
     .tag { font-size: 12px; padding: 4px 8px; border-radius: 4px; margin-right: 5px; font-weight: bold; }
-    .tag.parkour { background: #e67e22; }
-    .tag.command { background: #9b59b6; }
-    .tag.stream { background: #e74c3c; }
-    .tag.survival { background: #2980b9; }
-
-    .map-title { font-size: 20px; margin: 0 0 10px 0; color: #fff; }
+    .tag.stream { background: #e74c3c; } .tag.parkour { background: #e67e22; } .tag.command { background: #9b59b6; } .tag.survival { background: #2980b9; }
+    .map-title { font-size: 20px; margin: 0 0 10px 0; }
     .map-desc { font-size: 14px; color: #bbb; line-height: 1.5; margin-bottom: 15px; flex-grow: 1; }
     
-    /* 連結顯示區塊 */
-    .original-link-box {
-      background: #1a1a1a; padding: 10px; border-radius: 6px; margin-bottom: 15px; border-left: 3px solid #4CAF50;
-    }
-    .original-link-title { color: #aaa; font-size: 12px; margin-bottom: 4px; }
-    .original-link-url { color: #81c784; font-size: 13px; word-break: break-all; text-decoration: none; transition: 0.2s; }
-    .original-link-url:hover { color: #4CAF50; text-decoration: underline; }
-
-    .map-actions { display: flex; gap: 10px; }
-    .btn-outline, .btn-solid {
-      flex: 1; padding: 10px; text-align: center; border-radius: 6px; cursor: pointer;
-      font-weight: bold; border: none; font-size: 14px; transition: 0.2s;
-    }
-    .btn-outline { background: transparent; border: 2px solid #4CAF50; color: #4CAF50; }
-    .btn-outline:hover { background: rgba(76, 175, 80, 0.1); }
-    .btn-solid { background: #4CAF50; color: white; }
-    .btn-solid:hover { background: #45a049; }
-
-    /* Modal 彈出視窗 */
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center;
-    }
-    .modal-content {
-      background: #222; width: 90%; max-width: 600px; border-radius: 12px;
-      overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #4CAF50;
-    }
-    .modal-header { padding: 20px; background: #1a1a1a; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; }
-    .modal-header h2 { margin: 0; font-size: 22px; }
-    .close-btn { background: none; border: none; color: #aaa; font-size: 24px; cursor: pointer; transition: 0.2s; }
-    .close-btn:hover { color: #fff; transform: scale(1.1); }
-    .modal-body { padding: 30px; font-size: 15px; line-height: 1.8; color: #ddd; }
-    .modal-body ul { padding-left: 20px; }
+    .original-link-box { background: #1a1a1a; padding: 10px; border-radius: 6px; margin-bottom: 15px; border-left: 3px solid #4CAF50; }
+    .original-link-url { color: #81c784; font-size: 13px; word-break: break-all; text-decoration: none; }
     
-    /* 音樂播放器 */
-    .music-player { 
-      position: fixed; bottom: 0; width: 100%; background: #111; 
-      padding: 15px 30px; display: flex; align-items: center; 
-      border-top: 3px solid #4CAF50; box-sizing: border-box; z-index: 1000; 
-    }
+    .map-actions { display: flex; gap: 10px; }
+    .btn-outline, .btn-solid { flex: 1; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; border: none; font-size: 14px; }
+    .btn-outline { background: transparent; border: 2px solid #4CAF50; color: #4CAF50; }
+    .btn-solid { background: #4CAF50; color: white; }
+
+    /* 後台管理區塊設計 */
+    .admin-panel-container { background: #111; border: 2px dashed #f39c12; padding: 30px; border-radius: 12px; }
+    .admin-input { width: 100%; height: 200px; background: #222; color: #0f0; font-family: monospace; padding: 15px; border: 1px solid #555; border-radius: 6px; box-sizing: border-box; resize: vertical; margin-bottom: 15px; }
+    .btn-warning { background: #f39c12; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+    
+    .music-player { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px 30px; display: flex; align-items: center; border-top: 3px solid #4CAF50; box-sizing: border-box; z-index: 1000; }
   </style>
 </head>
 <body>
@@ -115,159 +56,128 @@
   <div class="nav-bar">
     <button class="tab-btn" onclick="switchTab('editor', this)">設定檔與編輯</button>
     <button class="tab-btn active" onclick="switchTab('maps', this)">特別地圖庫</button>
+    <!-- 隱藏的開發者按鈕 -->
+    <button class="admin-btn" onclick="switchTab('admin', this)" title="開發者後台">⚙️</button>
   </div>
 
   <div class="content-area">
     
     <!-- 模組 1: 外部工具 -->
     <div id="editor" class="panel">
-      <h2>Level.dat 檔案編輯與伺服器設定</h2>
       <div class="external-link-box">
         <h3>⚡ 啟動進階 NBT 編輯器</h3>
-        <p style="color: #ddd; font-size: 16px; margin-bottom: 30px;">
-          修改完成後直接下載覆蓋存檔即可！
-        </p>
-        <a href="https://irath96.github.io/webNBT/" target="_blank" class="btn-large">
-          前往 WebNBT 線上編輯器 ↗
-        </a>
+        <a href="https://irath96.github.io/webNBT/" target="_blank" class="btn-large">前往 WebNBT 線上編輯器 ↗</a>
       </div>
     </div>
 
-    <!-- 模組 3: 地圖展示區 -->
+    <!-- 模組 3: 地圖展示區 (內部已清空，由 JS 動態生成) -->
     <div id="maps" class="panel active">
       <h2>精選特別地圖庫</h2>
-      
-      <div class="map-grid">
+      <div class="map-grid" id="mapGridContainer">
+        <!-- 卡片會由 JavaScript 自動生成插入這裡 -->
+      </div>
+    </div>
+
+    <!-- 模組 5: 開發者專屬後台 (Admin Panel) -->
+    <div id="admin" class="panel">
+      <div class="admin-panel-container">
+        <h2 style="color: #f39c12; margin-top: 0;">🛠️ 開發者內容發佈中心 (CMS)</h2>
+        <p style="color: #aaa;">在這裡修改 JSON 資料，未來點擊發佈後將會自動透過 API 覆蓋 GitHub 上的檔案，完成全站更新。</p>
         
-        <!-- 地圖卡片 1 -->
-        <div class="map-card">
-          <img src="https://picsum.photos/seed/mc1/400/200" alt="跑酷地圖" class="map-img">
-          <div class="map-content">
-            <div class="map-tags">
-              <span class="tag stream">實況推薦</span>
-              <span class="tag parkour">極限跑酷</span>
-            </div>
-            <h3 class="map-title">極速跑酷挑戰</h3>
-            <p class="map-desc">專為考驗反應神經設計的極限跑酷地圖，結合了多種方塊跳躍技巧與紅石計時系統。</p>
-            
-            <!-- 原本連結區塊 -->
-            <div class="original-link-box">
-              <div class="original-link-title">🔗 前往原本連結：</div>
-              <a href="https://www.planetminecraft.com/你的地圖網址1" target="_blank" class="original-link-url">
-                https://www.planetminecraft.com/你的地圖網址1
-              </a>
-            </div>
-
-            <div class="map-actions">
-              <button class="btn-outline" onclick="openModal('parkour')">📖 觀看介紹</button>
-              <button class="btn-solid" onclick="alert('開始下載地圖檔案...')">📥 下載</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 地圖卡片 2 -->
-        <div class="map-card">
-          <img src="https://picsum.photos/seed/mc2/400/200" alt="紅石指令地圖" class="map-img">
-          <div class="map-content">
-            <div class="map-tags">
-              <span class="tag command">進階指令</span>
-              <span class="tag survival">計分板系統</span>
-            </div>
-            <h3 class="map-title">自訂武器與計分板展示</h3>
-            <p class="map-desc">這張地圖內含豐富的指令方塊模組，並附帶實用的 NBT 標籤範例供你拆解學習。</p>
-            
-            <!-- 原本連結區塊 -->
-            <div class="original-link-box">
-              <div class="original-link-title">🔗 前往原本連結：</div>
-              <a href="https://www.planetminecraft.com/你的地圖網址2" target="_blank" class="original-link-url">
-                https://www.planetminecraft.com/你的地圖網址2
-              </a>
-            </div>
-
-            <div class="map-actions">
-              <button class="btn-outline" onclick="openModal('command')">📖 觀看介紹</button>
-              <button class="btn-solid" onclick="alert('開始下載地圖檔案...')">📥 下載</button>
-            </div>
-          </div>
-        </div>
-
+        <label style="font-weight: bold; display: block; margin-bottom: 10px;">目前的地圖資料 (JSON 格式)：</label>
+        <textarea id="adminDataInput" class="admin-input"></textarea>
+        
+        <button class="btn-warning" onclick="previewData()">👁️ 預覽更改</button>
+        <button class="btn-warning" style="background: #c0392b; margin-left: 10px;" onclick="alert('尚未串接 GitHub Token，發佈功能準備中...')">🚀 正式發佈至 GitHub</button>
       </div>
     </div>
 
   </div>
 
-  <!-- 模組 4: 音樂播放器 -->
   <div class="music-player">
-    <div style="margin-right: 20px; font-weight: bold; color: #4CAF50;">🎵 唱片機 (Jukebox)</div>
-    <!-- 把 src 改成你自己的 mp3 檔案路徑或網址 -->
+    <div style="margin-right: 20px; font-weight: bold; color: #4CAF50;">🎵 唱片機</div>
     <audio controls style="height: 35px;"><source src="你的音樂.mp3" type="audio/mpeg"></audio>
-  </div>
-
-  <!-- 彈出式介紹視窗 (Modal) -->
-  <div class="modal-overlay" id="mapModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="modalTitle">地圖介紹</h2>
-        <button class="close-btn" onclick="closeModal()">✖</button>
-      </div>
-      <div class="modal-body" id="modalBody">
-        <!-- 內容由 JS 動態切換 -->
-      </div>
-    </div>
   </div>
 
   <script>
     function switchTab(tabId, btnElement) {
       document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      if(btnElement.classList.contains('tab-btn')) btnElement.classList.add('active');
       document.getElementById(tabId).classList.add('active');
-      btnElement.classList.add('active');
     }
 
-    const modal = document.getElementById('mapModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalBody = document.getElementById('modalBody');
-
-    const mapDetails = {
-      'parkour': {
-        title: '極速跑酷挑戰 - 詳細介紹',
-        content: `
-          <p>這張地圖是特別設計的高難度跑酷關卡，非常適合用來做影片企劃或實況挑戰！</p>
-          <ul>
-            <li><strong>關卡數量：</strong> 共 10 大關，難度逐漸遞增。</li>
-            <li><strong>內建系統：</strong> 使用 Command Block 製作的精準計時器與重生點系統。</li>
-            <li><strong>版本要求：</strong> Minecraft Java 版 1.20+。</li>
-          </ul>
-        `
+    // ==========================================
+    // 核心資料庫 (Data-Driven)
+    // 所有的地圖都變成這樣簡潔的資料結構
+    // ==========================================
+    let mapDatabase = [
+      {
+        "id": "parkour",
+        "title": "極速跑酷挑戰",
+        "image": "https://picsum.photos/seed/mc1/400/200",
+        "tagsHTML": "<span class='tag stream'>實況推薦</span><span class='tag parkour'>極限跑酷</span>",
+        "desc": "專為考驗反應神經設計的極限跑酷地圖，結合了多種方塊跳躍技巧與紅石計時系統。",
+        "originalUrl": "https://www.planetminecraft.com/your-map-url"
       },
-      'command': {
-        title: '自訂武器與計分板展示 - 詳細介紹',
-        content: `
-          <p>如果你對遊戲內的指令運作感興趣，這張地圖就是最好的教科書。</p>
-          <ul>
-            <li><strong>核心特色：</strong> 包含會爆炸的弓箭、帶有粒子特效的近戰武器。</li>
-            <li><strong>技術解析：</strong> 所有的指令方塊都已經按照邏輯分類並加上告示牌註解。</li>
-          </ul>
-        `
+      {
+        "id": "command",
+        "title": "自訂武器與計分板展示",
+        "image": "https://picsum.photos/seed/mc2/400/200",
+        "tagsHTML": "<span class='tag command'>進階指令</span><span class='tag survival'>計分板</span>",
+        "desc": "這張地圖內含豐富的指令方塊模組，並附帶實用的 NBT 標籤範例供你拆解學習。",
+        "originalUrl": "https://www.planetminecraft.com/your-map-url-2"
       }
-    };
+    ];
 
-    function openModal(mapId) {
-      const data = mapDetails[mapId];
-      if (data) {
-        modalTitle.innerText = data.title;
-        modalBody.innerHTML = data.content;
-        modal.style.display = 'flex';
-      }
+    // 初始化：將資料填入後台輸入框
+    document.getElementById('adminDataInput').value = JSON.stringify(mapDatabase, null, 2);
+
+    // ==========================================
+    // 自動渲染引擎：將 JSON 轉換為漂亮的 HTML 卡片
+    // ==========================================
+    function renderMaps() {
+      const container = document.getElementById('mapGridContainer');
+      container.innerHTML = ''; // 清空原本的內容
+      
+      mapDatabase.forEach(map => {
+        const cardHTML = `
+          <div class="map-card">
+            <img src="${map.image}" class="map-img">
+            <div class="map-content">
+              <div class="map-tags">${map.tagsHTML}</div>
+              <h3 class="map-title">${map.title}</h3>
+              <p class="map-desc">${map.desc}</p>
+              
+              <div class="original-link-box">
+                <div style="color: #aaa; font-size: 12px; margin-bottom: 4px;">🔗 前往原本連結：</div>
+                <a href="${map.originalUrl}" target="_blank" class="original-link-url">${map.originalUrl}</a>
+              </div>
+
+              <div class="map-actions">
+                <button class="btn-solid" onclick="alert('下載連結準備中...')">📥 下載</button>
+              </div>
+            </div>
+          </div>
+        `;
+        container.innerHTML += cardHTML;
+      });
     }
 
-    function closeModal() {
-      modal.style.display = 'none';
-    }
+    // 當網頁載入時，自動渲染一次卡片
+    renderMaps();
 
-    window.onclick = function(event) {
-      if (event.target == modal) {
-        closeModal();
+    // ==========================================
+    // 後台預覽功能
+    // ==========================================
+    function previewData() {
+      try {
+        const inputData = document.getElementById('adminDataInput').value;
+        mapDatabase = JSON.parse(inputData);
+        renderMaps();
+        alert('預覽成功！請切換回「特別地圖庫」查看新版面。');
+      } catch (e) {
+        alert('JSON 格式錯誤，請檢查是否有漏掉逗號或引號！\n' + e.message);
       }
     }
   </script>
