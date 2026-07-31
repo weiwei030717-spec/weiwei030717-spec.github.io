@@ -10,7 +10,6 @@
     .tab-btn:hover { background: #444; }
     .tab-btn.active { border-color: #4CAF50; background: #1e3a1f; color: #4CAF50; }
     
-    /* 隱藏後台按鈕 (推到最右邊) */
     .admin-btn { margin-left: auto; background: transparent; border: none; font-size: 20px; cursor: pointer; opacity: 0.3; transition: 0.2s; }
     .admin-btn:hover { opacity: 1; }
 
@@ -19,12 +18,10 @@
     .panel.active { display: block; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* 模組 1: 外部連結 */
     .external-link-box { background: linear-gradient(135deg, #2c3e50, #3498db); padding: 50px; border-radius: 12px; text-align: center; }
     .btn-large { display: inline-block; padding: 15px 35px; font-size: 18px; font-weight: bold; background: #4CAF50; color: white; text-decoration: none; border-radius: 8px; transition: 0.3s; margin-top: 20px; }
     .btn-large:hover { background: #45a049; }
 
-    /* 模組 3: 地圖展示區 */
     .map-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
     .map-card { background: #2a2a2a; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
     .map-img { width: 100%; height: 180px; object-fit: cover; border-bottom: 3px solid #4CAF50; }
@@ -39,14 +36,15 @@
     .original-link-url { color: #81c784; font-size: 13px; word-break: break-all; text-decoration: none; }
     
     .map-actions { display: flex; gap: 10px; }
-    .btn-outline, .btn-solid { flex: 1; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; border: none; font-size: 14px; }
-    .btn-outline { background: transparent; border: 2px solid #4CAF50; color: #4CAF50; }
-    .btn-solid { background: #4CAF50; color: white; }
+    .btn-solid { flex: 1; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; border: none; font-size: 14px; background: #4CAF50; color: white; }
 
     /* 後台管理區塊設計 */
     .admin-panel-container { background: #111; border: 2px dashed #f39c12; padding: 30px; border-radius: 12px; }
-    .admin-input { width: 100%; height: 200px; background: #222; color: #0f0; font-family: monospace; padding: 15px; border: 1px solid #555; border-radius: 6px; box-sizing: border-box; resize: vertical; margin-bottom: 15px; }
-    .btn-warning { background: #f39c12; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+    .admin-input { width: 100%; height: 350px; background: #222; color: #0f0; font-family: monospace; padding: 15px; border: 1px solid #555; border-radius: 6px; box-sizing: border-box; resize: vertical; margin-bottom: 15px; }
+    .file-input-group { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+    .file-input-group input { padding: 8px; font-size: 16px; background: #333; color: white; border: 1px solid #555; border-radius: 4px; width: 300px; }
+    .btn-warning { background: #f39c12; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .btn-warning:hover { background: #d68910; }
     
     .music-player { position: fixed; bottom: 0; width: 100%; background: #111; padding: 15px 30px; display: flex; align-items: center; border-top: 3px solid #4CAF50; box-sizing: border-box; z-index: 1000; }
   </style>
@@ -56,13 +54,11 @@
   <div class="nav-bar">
     <button class="tab-btn" onclick="switchTab('editor', this)">設定檔與編輯</button>
     <button class="tab-btn active" onclick="switchTab('maps', this)">特別地圖庫</button>
-    <!-- 隱藏的開發者按鈕 -->
     <button class="admin-btn" onclick="switchTab('admin', this)" title="開發者後台">⚙️</button>
   </div>
 
   <div class="content-area">
     
-    <!-- 模組 1: 外部工具 -->
     <div id="editor" class="panel">
       <div class="external-link-box">
         <h3>⚡ 啟動進階 NBT 編輯器</h3>
@@ -70,25 +66,26 @@
       </div>
     </div>
 
-    <!-- 模組 3: 地圖展示區 (內部已清空，由 JS 動態生成) -->
+    <!-- 地圖展示區 -->
     <div id="maps" class="panel active">
       <h2>精選特別地圖庫</h2>
-      <div class="map-grid" id="mapGridContainer">
-        <!-- 卡片會由 JavaScript 自動生成插入這裡 -->
-      </div>
+      <div class="map-grid" id="mapGridContainer"></div>
     </div>
 
-    <!-- 模組 5: 開發者專屬後台 (Admin Panel) -->
+    <!-- 開發者專屬後台 -->
     <div id="admin" class="panel">
       <div class="admin-panel-container">
-        <h2 style="color: #f39c12; margin-top: 0;">🛠️ 開發者內容發佈中心 (CMS)</h2>
-        <p style="color: #aaa;">在這裡修改 JSON 資料，未來點擊發佈後將會自動透過 API 覆蓋 GitHub 上的檔案，完成全站更新。</p>
+        <h2 style="color: #f39c12; margin-top: 0;">🛠️ GitHub 即時同步發佈中心</h2>
+        <p style="color: #aaa;">在此貼上我給你的新程式碼或 JSON 資料，點擊發佈即可直接寫入 GitHub 儲存庫。</p>
         
-        <label style="font-weight: bold; display: block; margin-bottom: 10px;">目前的地圖資料 (JSON 格式)：</label>
-        <textarea id="adminDataInput" class="admin-input"></textarea>
+        <div class="file-input-group">
+          <label style="font-weight: bold;">準備更新的檔案名稱：</label>
+          <input type="text" id="targetFilePath" value="index.html">
+        </div>
+
+        <textarea id="adminDataInput" class="admin-input" placeholder="在這裡貼上完整的程式碼..."></textarea>
         
-        <button class="btn-warning" onclick="previewData()">👁️ 預覽更改</button>
-        <button class="btn-warning" style="background: #c0392b; margin-left: 10px;" onclick="alert('尚未串接 GitHub Token，發佈功能準備中...')">🚀 正式發佈至 GitHub</button>
+        <button class="btn-warning" style="background: #c0392b;" onclick="pushToGitHub()">🚀 正式發佈並覆蓋至 GitHub</button>
       </div>
     </div>
 
@@ -107,77 +104,106 @@
       document.getElementById(tabId).classList.add('active');
     }
 
-    // ==========================================
-    // 核心資料庫 (Data-Driven)
-    // 所有的地圖都變成這樣簡潔的資料結構
-    // ==========================================
-    let mapDatabase = [
+    // 地圖資料 (簡易範例)
+    const mapDatabase = [
       {
-        "id": "parkour",
         "title": "極速跑酷挑戰",
         "image": "https://picsum.photos/seed/mc1/400/200",
         "tagsHTML": "<span class='tag stream'>實況推薦</span><span class='tag parkour'>極限跑酷</span>",
-        "desc": "專為考驗反應神經設計的極限跑酷地圖，結合了多種方塊跳躍技巧與紅石計時系統。",
+        "desc": "專為考驗反應神經設計的極限跑酷地圖。",
         "originalUrl": "https://www.planetminecraft.com/your-map-url"
-      },
-      {
-        "id": "command",
-        "title": "自訂武器與計分板展示",
-        "image": "https://picsum.photos/seed/mc2/400/200",
-        "tagsHTML": "<span class='tag command'>進階指令</span><span class='tag survival'>計分板</span>",
-        "desc": "這張地圖內含豐富的指令方塊模組，並附帶實用的 NBT 標籤範例供你拆解學習。",
-        "originalUrl": "https://www.planetminecraft.com/your-map-url-2"
       }
     ];
 
-    // 初始化：將資料填入後台輸入框
-    document.getElementById('adminDataInput').value = JSON.stringify(mapDatabase, null, 2);
-
-    // ==========================================
-    // 自動渲染引擎：將 JSON 轉換為漂亮的 HTML 卡片
-    // ==========================================
     function renderMaps() {
       const container = document.getElementById('mapGridContainer');
-      container.innerHTML = ''; // 清空原本的內容
-      
+      container.innerHTML = '';
       mapDatabase.forEach(map => {
-        const cardHTML = `
+        container.innerHTML += `
           <div class="map-card">
             <img src="${map.image}" class="map-img">
             <div class="map-content">
               <div class="map-tags">${map.tagsHTML}</div>
               <h3 class="map-title">${map.title}</h3>
               <p class="map-desc">${map.desc}</p>
-              
               <div class="original-link-box">
-                <div style="color: #aaa; font-size: 12px; margin-bottom: 4px;">🔗 前往原本連結：</div>
+                <div style="color:#aaa; font-size:12px; margin-bottom:4px;">🔗 前往原本連結：</div>
                 <a href="${map.originalUrl}" target="_blank" class="original-link-url">${map.originalUrl}</a>
               </div>
-
               <div class="map-actions">
                 <button class="btn-solid" onclick="alert('下載連結準備中...')">📥 下載</button>
               </div>
             </div>
           </div>
         `;
-        container.innerHTML += cardHTML;
       });
     }
-
-    // 當網頁載入時，自動渲染一次卡片
     renderMaps();
 
     // ==========================================
-    // 後台預覽功能
+    // GitHub API 遠端推播核心邏輯
     // ==========================================
-    function previewData() {
+    async function pushToGitHub() {
+      // 獲取使用者設定檔
+      const owner = 'Dogfish0528';
+      const repo = 'Dogfish0528.github.io';
+      const path = document.getElementById('targetFilePath').value.trim();
+      const newContent = document.getElementById('adminDataInput').value;
+
+      if(!path || !newContent) {
+        alert("❌ 檔案名稱與內容不能為空！");
+        return;
+      }
+
+      // 要求輸入 Token
+      const token = prompt("🔒 安全認證：\n請輸入你的 GitHub Personal Access Token：\n(此權杖僅用於本次傳輸，不會被儲存)");
+      if(!token) {
+        alert("操作已取消。");
+        return;
+      }
+
       try {
-        const inputData = document.getElementById('adminDataInput').value;
-        mapDatabase = JSON.parse(inputData);
-        renderMaps();
-        alert('預覽成功！請切換回「特別地圖庫」查看新版面。');
-      } catch (e) {
-        alert('JSON 格式錯誤，請檢查是否有漏掉逗號或引號！\n' + e.message);
+        const fileUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+        let sha = undefined;
+
+        // 步驟 1: 取得現有檔案的 SHA 碼 (GitHub 修改檔案必須提供舊檔案的 SHA)
+        console.log("正在檢查遠端檔案狀態...");
+        const getRes = await fetch(fileUrl, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (getRes.ok) {
+          const getData = await getRes.json();
+          sha = getData.sha;
+        }
+
+        // 步驟 2: 處理文字編碼並上傳 (支援中文與特殊字元轉換為 Base64)
+        console.log("準備發佈更新...");
+        const base64Content = btoa(unescape(encodeURIComponent(newContent)));
+
+        const putRes = await fetch(fileUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Update ${path} via Web CMS`,
+            content: base64Content,
+            sha: sha // 如果檔案不存在，sha 為 undefined 則會自動建立新檔案
+          })
+        });
+
+        if (putRes.ok) {
+          alert(`✅ 發佈成功！\n檔案 ${path} 已更新至 GitHub。\n\n請注意：GitHub Pages 通常需要 1~3 分鐘才會將變化反映到公開網址上。`);
+          // 清空輸入框避免誤觸
+          document.getElementById('adminDataInput').value = ''; 
+        } else {
+          const errData = await putRes.json();
+          alert(`❌ 發佈失敗：\n${errData.message}`);
+        }
+      } catch (error) {
+        alert(`❌ 發生網路或系統錯誤：\n${error.message}`);
       }
     }
   </script>
